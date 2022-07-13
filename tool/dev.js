@@ -20,7 +20,7 @@ const INPUT_FILE = path.resolve(__dirname, "../src/index.js");
 const OUTPUT_FILE = path.resolve(__dirname, "../www/main.js");
 const OUTPUT_FILE_MIN = path.resolve(__dirname, "../www/main.min.js");
 const OUTPUT_FOLDER = path.resolve(__dirname, "../www");
-const OUTPUT_ZIP = path.resolve(__dirname, "../project.zip");
+const OUTPUT_ZIP = path.resolve(__dirname, "../build/project.zip");
 
 if (mode === "development") {
   const liveServer = require("live-server");

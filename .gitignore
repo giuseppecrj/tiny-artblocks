@@ -5,3 +5,4 @@ node_modules
 bundle.js
 www/main.js
 www/main.min.js
+build/*.zip
