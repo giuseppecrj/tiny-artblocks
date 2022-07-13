@@ -10,7 +10,7 @@
     "url": "https://github.com/mattdesl"
   },
   "scripts": {
-    "build": "node tool/dev.js",
+    "build": "node tool/dev.js --zip",
     "inspect": "node tool/dev.js --inspect",
     "start": "node tool/dev.js --dev"
   },
@@ -35,5 +35,7 @@
     "rollup": "^2.50.2",
     "terser": "^5.7.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "archiver": "^5.3.1"
+  }
 }

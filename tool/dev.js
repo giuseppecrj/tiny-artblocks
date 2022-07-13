@@ -7,15 +7,20 @@ const prettyBytes = require("pretty-bytes");
 const fs = require("fs");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const pluginJson = require("@rollup/plugin-json");
+const archiver = require("archiver");
+
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const { handleError, printError } = require("./error");
 
 const mode = process.argv.includes("--dev") ? "development" : "production";
+const zip = process.argv.includes("--zip");
 const gwei = 125;
 const INPUT_FILE = path.resolve(__dirname, "../src/index.js");
 const OUTPUT_FILE = path.resolve(__dirname, "../www/main.js");
 const OUTPUT_FILE_MIN = path.resolve(__dirname, "../www/main.min.js");
+const OUTPUT_FOLDER = path.resolve(__dirname, "../www");
+const OUTPUT_ZIP = path.resolve(__dirname, "../project.zip");
 
 if (mode === "development") {
   const liveServer = require("live-server");
@@ -64,6 +69,12 @@ async function build() {
     const min = await compress(src);
     await writeFile(OUTPUT_FILE_MIN, min);
 
+    try {
+      if (zip) await zipDirectory(OUTPUT_FOLDER, OUTPUT_ZIP);
+    } catch (err) {
+      console.log(err);
+    }
+
     console.log(`Minified Bytes: ${min.length} (${prettyBytes(min.length)})`);
 
     const eth = 675 * min.length * gwei * (1 / 1000000000);
@@ -78,6 +89,21 @@ async function build() {
     msg = JSON.stringify(msg);
     return printError(msg);
   }
+}
+
+function zipDirectory(sourceDir, outPath) {
+  const archive = archiver("zip", { zlib: { level: 9 } });
+  const stream = fs.createWriteStream(outPath);
+
+  return new Promise((resolve, reject) => {
+    archive
+      .directory(sourceDir, false)
+      .on("error", (err) => reject(err))
+      .pipe(stream);
+
+    stream.on("close", () => resolve());
+    archive.finalize();
+  });
 }
 
 async function bundle() {
